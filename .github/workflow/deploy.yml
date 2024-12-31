@@ -1,0 +1,21 @@
+name: Push to dockerhub
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+        - name: Setup docker
+          uses: docker/setup-buildx-action@v3
+        - name: Build docker image
+          run: docker build -f ./docker/docs-app/Dockerfile -t 100xdevs/gdocs-fe:${{ github.sha }} .
+        - name: Login to dockerhub
+          run: docker login -u 100xdevs -p ${{ secrets.DOCKERHUB_PASSWORD }}
+        - name: Push docker image
+          run: docker push 100xdevs/gdocs-fe:${{ github.sha }}
